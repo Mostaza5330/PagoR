@@ -1,0 +1,6 @@
+DAOs\PedidoDAO.class
+entity\Pedido.class
+DAOs\DAO.class
+DAOs\PagoDAO.class
+entity\Pago.class
+entity\Entity.class
