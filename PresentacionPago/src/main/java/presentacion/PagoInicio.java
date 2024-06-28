@@ -26,7 +26,7 @@ public class PagoInicio extends javax.swing.JFrame {
     private void establecerConexion() {
         try {
             String url = "jdbc:mysql://localhost:3306/restaurante"; // Reemplaza "tu_base_de_datos" con el nombre de tu base de datos
-            String user = "tu_usuario"; // Reemplaza "tu_usuario" con tu usuario de MySQL
+            String user = "root"; // Reemplaza "tu_usuario" con tu usuario de MySQL
             String password = ""; // Reemplaza "tu_contraseña" con tu contraseña de MySQL
             connection = DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
