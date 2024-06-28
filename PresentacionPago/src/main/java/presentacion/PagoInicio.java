@@ -1,7 +1,9 @@
 package presentacion;
 
-import DAOs.PagoDAO;
-import entity.Pago;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -9,15 +11,30 @@ import javax.swing.table.DefaultTableModel;
 
 public class PagoInicio extends javax.swing.JFrame {
 
-    private PagoDAO pagoDAO;
+    private Connection connection;
 
-    public PagoInicio(PagoDAO pagoDAO) {
+    public PagoInicio() {
         initComponents();
         transparenciaBtn();
         setLocationRelativeTo(null);
 
-        this.pagoDAO = pagoDAO;
+        // Establecer conexión con la base de datos
+        establecerConexion();
+        cargarPagos();
     }
+
+    private void establecerConexion() {
+        try {
+            String url = "jdbc:mysql://localhost:3306/restaurante"; // Reemplaza "tu_base_de_datos" con el nombre de tu base de datos
+            String user = "tu_usuario"; // Reemplaza "tu_usuario" con tu usuario de MySQL
+            String password = ""; // Reemplaza "tu_contraseña" con tu contraseña de MySQL
+            connection = DriverManager.getConnection(url, user, password);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al conectar con la base de datos: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
