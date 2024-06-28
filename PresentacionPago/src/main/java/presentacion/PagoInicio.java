@@ -1,40 +1,22 @@
 package presentacion;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.List;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
+import DAOs.OrdenDAO;
+import entity.Orden;
+
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.List;
 
 public class PagoInicio extends javax.swing.JFrame {
 
-    private Connection connection;
-
+    private OrdenDAO ordenDAO;
     public PagoInicio() {
         initComponents();
         transparenciaBtn();
         setLocationRelativeTo(null);
-
-        // Establecer conexión con la base de datos
-        establecerConexion();
-        cargarPagos();
+        this.ordenDAO = new OrdenDAO();
+        cargarOrden();
     }
-
-    private void establecerConexion() {
-        try {
-            String url = "jdbc:mysql://localhost:3306/restaurante"; // Reemplaza "tu_base_de_datos" con el nombre de tu base de datos
-            String user = "root"; // Reemplaza "tu_usuario" con tu usuario de MySQL
-            String password = ""; // Reemplaza "tu_contraseña" con tu contraseña de MySQL
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al conectar con la base de datos: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -90,22 +72,14 @@ public class PagoInicio extends javax.swing.JFrame {
         TablaPago.setForeground(new java.awt.Color(255, 255, 255));
         TablaPago.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"# 1", "2", "1 Pastel de chocolate", "250"},
-                {"# 2", "4", "1 Helado", "30"},
-                {"# 3", "1", "5 Tacos", "160"}
+                {},
+                {},
+                {}
             },
             new String [] {
-                "No.Orden", "Mesa", "Platillos", "Total"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
             }
-        });
+        ));
         TablaPago.setGridColor(new java.awt.Color(102, 102, 102));
         TablaPago.setSelectionBackground(new java.awt.Color(117, 209, 255));
         jScrollPane1.setViewportView(TablaPago);
@@ -123,25 +97,38 @@ public class PagoInicio extends javax.swing.JFrame {
     }//GEN-LAST:event_BtnSalirMouseClicked
 
     private void BtnEfectivoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnEfectivoMouseClicked
-        Efectivo efectivo = new Efectivo(this); // Puedes pasar 'this' si necesitas hacer referencia a la ventana actual
-        efectivo.setVisible(true);
-        this.setVisible(false); // Oculta la ventana actual
+        int filaSeleccionada = TablaPago.getSelectedRow();
+
+        if (filaSeleccionada != -1) {
+            int ordenId = (int) TablaPago.getValueAt(filaSeleccionada, 0);
+            try {
+                Orden orden = ordenDAO.getOrden(ordenId);
+                Efectivo efectivo = new Efectivo(orden, ordenDAO);
+                efectivo.setVisible(true);
+                this.setVisible(false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Error al cargar la orden: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Selecciona una fila primero");
+        }
     }//GEN-LAST:event_BtnEfectivoMouseClicked
 
     private void BtnTarjetaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnTarjetaMouseClicked
         int filaSeleccionada = TablaPago.getSelectedRow();
 
         if (filaSeleccionada != -1) {
-            // Obtener la información de la fila seleccionada
-            String noOrden = TablaPago.getValueAt(filaSeleccionada, 0).toString();
-            String mesa = TablaPago.getValueAt(filaSeleccionada, 1).toString();
-            String platillos = TablaPago.getValueAt(filaSeleccionada, 2).toString();
-            String total = TablaPago.getValueAt(filaSeleccionada, 3).toString();
-
-            // Abrir la ventana de Pago con Tarjeta
-            Tarjeta tarjeta = new Tarjeta(this, noOrden, mesa, platillos, total);
-            tarjeta.setVisible(true);
-            this.setVisible(false); // Oculta la ventana actual
+            int ordenId = (int) TablaPago.getValueAt(filaSeleccionada, 0);
+            try {
+                Orden orden = ordenDAO.getOrden(ordenId);
+                Tarjeta tarjeta = new Tarjeta(orden, ordenDAO);
+                tarjeta.setVisible(true);
+                this.setVisible(false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Error al cargar la orden: " + e.getMessage());
+                e.printStackTrace();
+            }
         } else {
             JOptionPane.showMessageDialog(null, "Selecciona una fila primero");
         }
@@ -164,31 +151,27 @@ public class PagoInicio extends javax.swing.JFrame {
         jScrollPane1.setOpaque(false);
     }
 
-    public void cargarPagos() {
+    public void cargarOrden() {
         DefaultTableModel modelo = (DefaultTableModel) TablaPago.getModel();
         modelo.setRowCount(0); // Limpiar la tabla antes de cargar nuevos datos
 
         try {
-            // Obtener la lista de pagos desde el DAO
-            List<Pago> listaPagos = pagoDAO.listarPagos();
-
-            // Recorrer la lista de pagos y agregar cada uno como una fila en la tabla
-            for (Pago pago : listaPagos) {
+            List<Orden> listaOrdenes = ordenDAO.listarOrdenes();
+            for (Orden orden : listaOrdenes) {
                 Object[] fila = {
-                    pago.getId(),
-                    pago.getDescripcion(),
-                    pago.getMonto()
+                    orden.getId(),
+                    orden.getMesa(),
+                    orden.getFecha(),
+                    orden.getTotal()
                 };
                 modelo.addRow(fila);
             }
-
-            // Establecer el nuevo modelo en la tabla
             TablaPago.setModel(modelo);
-
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al cargar los pagos: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al cargar las ordenes: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 
 

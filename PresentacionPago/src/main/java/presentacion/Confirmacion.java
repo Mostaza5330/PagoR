@@ -5,25 +5,28 @@
 package presentacion;
 
 import DAOs.PagoDAO;
+import entity.Orden;
 import entity.Pago;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class Confirmacion extends javax.swing.JFrame {
 
     private PagoDAO pagoDAO;
-    private Pago pago;
-    private String noOrden;
+    private Orden orden;
+    private PagoInicio ventanaPago; // Referencia a la ventana de pago
 
-    public Confirmacion(PagoDAO pagoDAO, Pago pago, String noOrden) {
+    public Confirmacion(PagoDAO pagoDAO, Orden orden, PagoInicio ventanaPago) {
         initComponents();
         this.pagoDAO = pagoDAO;
-        this.pago = pago;
-        this.noOrden = noOrden;
+        this.orden = orden;
+        this.ventanaPago = ventanaPago;
         transparenciaBtn();
         setLocationRelativeTo(null);
 
-        txtNoOrden.setText(noOrden);
+        // Mostrar detalles de la orden en el campo de texto
+        txtNoOrden.setText(String.valueOf(orden.getId()));
     }
 
     @SuppressWarnings("unchecked")
@@ -65,27 +68,30 @@ public class Confirmacion extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtnAceptarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnAceptarMouseClicked
-        dispose();
+        DefaultTableModel modeloTabla = (DefaultTableModel) ventanaPago.getTablaPago().getModel();
 
-        DefaultTableModel modeloTabla = (DefaultTableModel) pago.getTablaPago().getModel();
-
-        int filaSeleccionada = pago.getTablaPago().getSelectedRow();
+        int filaSeleccionada = ventanaPago.getTablaPago().getSelectedRow();
 
         if (filaSeleccionada != -1) {
-            modeloTabla.removeRow(filaSeleccionada);
+        modeloTabla.removeRow(filaSeleccionada);
 
-            // Crear el objeto Pago y guardarlo usando el DAO
-            double monto = 0.0; // Aquí debes obtener el valor correcto de monto
-            String descripcion = ""; // Aquí debes obtener el valor correcto de descripción
+        // Crear el objeto Pago y guardarlo usando el DAO
+        double monto = orden.getTotal();
+        String descripcion = "Pago de orden " + orden.getId();
 
-            Pago nuevoPago = new Pago(0, monto, descripcion); // El ID se asignará automáticamente
-            pagoDAO.crearPago(nuevoPago);
-        } else {
-            JOptionPane.showMessageDialog(null, "Selecciona una fila primero");
+        Pago nuevoPago = new Pago(0, (float) monto, "Efectivo",descripcion, "2023-06-28"); // El ID se asignará automáticamente
+        nuevoPago.setMetodoPago("Efectivo");
+        try {
+            pagoDAO.agregarPago(nuevoPago);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al agregar el pago: " + e.getMessage());
         }
-
-        pago.setVisible(true);
-
+    } else {
+        JOptionPane.showMessageDialog(null, "Selecciona una fila primero");
+    }
+        ventanaPago.setVisible(true);
+        dispose();
     }//GEN-LAST:event_BtnAceptarMouseClicked
     public void transparenciaBtn() {
         BtnAceptar.setOpaque(false);

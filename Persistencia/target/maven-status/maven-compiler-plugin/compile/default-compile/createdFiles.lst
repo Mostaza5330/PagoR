@@ -1,6 +1,6 @@
-DAOs\PedidoDAO.class
-entity\Pedido.class
-DAOs\DAO.class
+entity\Orden.class
+entity\DetalleOrden.class
 DAOs\PagoDAO.class
 entity\Pago.class
-entity\Entity.class
+DAOs\OrdenDAO.class
+DAOs\ConexionDB.class

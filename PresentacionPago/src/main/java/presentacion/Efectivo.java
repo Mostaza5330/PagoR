@@ -3,31 +3,30 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package presentacion;
+import entity.Orden;
+import DAOs.OrdenDAO;
 
-import DAOs.PagoDAO;
-import entity.Pago;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 public class Efectivo extends javax.swing.JFrame {
 
-    private Pago pago;
-    private String noOrden;
-    private PagoDAO pagoDAO;
-private Pago ventanaPago;
-    public Efectivo(Pago pago, String noOrden, PagoDAO pagoDAO) {
+    private Orden orden;
+    private OrdenDAO ordenDAO;
+
+    public Efectivo(Orden orden, OrdenDAO ordenDAO) {
         initComponents();
         transparenciaBtn();
         setLocationRelativeTo(null);
-        this.ventanaPago = ventanaPago;
-        
-        this.pago = pago;
-        this.noOrden = noOrden;
-        this.pagoDAO = pagoDAO;
 
-        txtNoOrden.setText(noOrden);
-        txtTotal.setText(String.valueOf(pago.getMonto()));
+        this.orden = orden;
+        this.ordenDAO = ordenDAO;
+
+        txtNoOrden.setText(String.valueOf(orden.getId()));
+        txtTotal.setText(String.valueOf(orden.getTotal()));
+        txtMesa.setText(String.valueOf(orden.getMesa()));
+        txtPlatillos.setText(orden.getDetalles().toString()); // Modify as needed to show details
     }
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -142,27 +141,7 @@ private Pago ventanaPago;
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtnAceptarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnAceptarMouseClicked
-        int filaSeleccionada = pago.getTablaPago().getSelectedRow();
-
-        if (filaSeleccionada != -1) {
-            String noOrden = pago.getTablaPago().getValueAt(filaSeleccionada, 0).toString();
-
-            try {
-                double monto = Double.parseDouble(txtTotal.getText());
-
-                // Crear el objeto Pago y guardarlo usando el DAO
-                Pago nuevoPago = new Pago(0, monto, "Pago en efectivo"); // El ID se asignará automáticamente
-                pagoDAO.crearPago(nuevoPago);
-
-                Confirmacion confirmacion = new Confirmacion(pagoDAO, pago, noOrden);
-                confirmacion.setVisible(true);
-                dispose();
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Error en el formato del monto.");
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecciona una fila primero.");
-        }
+        //Aqui va un validador que revisa que el pago sea mayor que la cantidad del total de la tabla
     }//GEN-LAST:event_BtnAceptarMouseClicked
 
     private void BtnSalirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnSalirMouseClicked
@@ -171,10 +150,7 @@ private Pago ventanaPago;
     }//GEN-LAST:event_BtnSalirMouseClicked
 
     private void txtPagoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPagoKeyPressed
-        char enter = (char) evt.getKeyCode();
-
-        if (enter == evt.VK_ENTER) {
-
+         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             float precioTotal = Float.parseFloat(txtTotal.getText());
             float pagoCliente = Float.parseFloat(txtPago.getText());
             float vuelto;
@@ -185,7 +161,6 @@ private Pago ventanaPago;
                 vuelto = pagoCliente - precioTotal;
                 txtCambio.setText(String.valueOf(vuelto));
             }
-
         }
     }//GEN-LAST:event_txtPagoKeyPressed
     public void transparenciaBtn() {

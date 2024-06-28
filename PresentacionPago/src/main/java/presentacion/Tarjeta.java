@@ -1,33 +1,34 @@
 package presentacion;
 
+import DAOs.OrdenDAO;
 import DAOs.PagoDAO;
+import entity.Orden;
 import entity.Pago;
 import javax.swing.JOptionPane;
 import com.mycompany.verificapago.IVerificaPago;
 import com.mycompany.verificapago.VerificaPago;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class Tarjeta extends javax.swing.JFrame {
 
-    private Pago ventanaPago; // Variable para almacenar la referencia a la ventana de Pago
-    private String noOrden;
-    private String mesa;
-    private String platillos;
-    private String total;
+    private Orden orden;
+    private OrdenDAO ordenDAO;
+    private PagoDAO pagoDAO;
+    private IVerificaPago iVerificaPago;
 
-    public Tarjeta(Pago ventanaPago, String noOrden, String mesa, String platillos, String total) {
+    public Tarjeta(Orden orden, OrdenDAO ordenDAO, Connection connection) {
         initComponents();
-        this.ventanaPago = ventanaPago; // Asignar la referencia de la ventana de Pago recibida
-        this.noOrden = noOrden;
-        this.mesa = mesa;
-        this.platillos = platillos;
-        this.total = total;
-        setLocationRelativeTo(null); // Centrar la ventana en la pantalla
+        this.orden = orden;
+        this.ordenDAO = ordenDAO;
+        this.pagoDAO = new PagoDAO(connection); // Pasar la conexión a PagoDAO
+        this.iVerificaPago = new VerificaPago(); // Suponiendo que VerificaPago implementa IVerificaPago
+        setLocationRelativeTo(null);
 
-        // Configurar los campos de texto u otros componentes con los datos recibidos
-        txtNoOrden.setText(noOrden);
-        txtMesa.setText(mesa);
-        txtPlatillos.setText(platillos);
-        txtTotal.setText(total);
+        txtNoOrden.setText(String.valueOf(orden.getId()));
+        txtMesa.setText(String.valueOf(orden.getMesa()));
+        txtPlatillos.setText(orden.getDetalles().toString()); // Ajustar según la estructura de detalles
+        txtTotal.setText(String.valueOf(orden.getTotal()));
     }
 
     @SuppressWarnings("unchecked")
@@ -164,56 +165,50 @@ public class Tarjeta extends javax.swing.JFrame {
     }//GEN-LAST:event_BtnSalirMouseClicked
 
     private void BtnAceptarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnAceptarMouseClicked
-        int filaSeleccionada = pago.getTablaPago().getSelectedRow();
+        String numeroTarjeta = TxtNumeroTarjeta.getText().trim();
+        String fechaCaducidad = TxtFechaCaducidad.getText().trim();
+        String cvv = TxtCVV.getText().trim();
 
-        if (filaSeleccionada != -1) {
-            String noOrden = pago.getTablaPago().getValueAt(filaSeleccionada, 0).toString();
+        if (numeroTarjeta.isEmpty() || fechaCaducidad.isEmpty() || cvv.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor complete todos los campos de tarjeta.");
+            return;
+        }
 
-            String numeroTarjeta = TxtNumeroTarjeta.getText().trim();
-            String fechaCaducidad = TxtFechaCaducidad.getText().trim();
-            String cvv = TxtCVV.getText().trim();
+        if (!numeroTarjeta.matches("\\d{16}")) {
+            JOptionPane.showMessageDialog(this, "Número de tarjeta inválido. Debe contener 16 dígitos.");
+            return;
+        }
 
-            if (numeroTarjeta.isEmpty() || fechaCaducidad.isEmpty() || cvv.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor complete todos los campos de tarjeta.");
-                return;
+        if (!fechaCaducidad.matches("(0[1-9]|1[0-2])/\\d{2}")) {
+            JOptionPane.showMessageDialog(this, "Fecha de caducidad inválida. Debe ser MM/AA.");
+            return;
+        }
+
+        if (!cvv.matches("\\d{3}")) {
+            JOptionPane.showMessageDialog(this, "CVV inválido. Debe contener 3 dígitos.");
+            return;
+        }
+
+        try {
+            double monto = orden.getTotal();
+
+            boolean pagoVerificado = iVerificaPago.verificarPago(numeroTarjeta, monto, cvv, fechaCaducidad);
+
+            if (pagoVerificado) {
+                Pago nuevoPago = new Pago(0, (float) monto,"Tarjeta", "Pago de orden " + orden.getId(), "2023-06-28"); // Ajustar fecha
+                pagoDAO.agregarPago(nuevoPago);
+
+                Confirmacion confirmacion = new Confirmacion(pagoDAO, nuevoPago, String.valueOf(orden.getId()));
+
+                confirmacion.setVisible(true);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Pago no verificado. Verifique los datos de la tarjeta.");
             }
-
-            if (!numeroTarjeta.matches("\\d{16}")) {
-                JOptionPane.showMessageDialog(this, "Número de tarjeta inválido. Debe contener 16 dígitos.");
-                return;
-            }
-
-            if (!fechaCaducidad.matches("(0[1-9]|1[0-2])/\\d{2}")) {
-                JOptionPane.showMessageDialog(this, "Fecha de caducidad inválida. Debe ser MM/AA.");
-                return;
-            }
-
-            if (!cvv.matches("\\d{3}")) {
-                JOptionPane.showMessageDialog(this, "CVV inválido. Debe contener 3 dígitos.");
-                return;
-            }
-
-            try {
-                double monto = Double.parseDouble(txtTotal.getText());
-
-                boolean pagoVerificado = iVerificaPago.verificarPago(numeroTarjeta, monto, cvv, fechaCaducidad);
-
-                if (pagoVerificado) {
-                    // Crear el objeto Pago y guardarlo usando el DAO
-                    Pago nuevoPago = new Pago(0, monto, "Descripción del pago"); // El ID se asignará automáticamente
-                    pagoDAO.crearPago(nuevoPago);
-
-                    Confirmacion confirmacion = new Confirmacion(pagoDAO, pago, noOrden);
-                    confirmacion.setVisible(true);
-                    dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Pago no verificado. Verifique los datos de la tarjeta.");
-                }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Error en el formato del monto.");
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecciona una fila primero.");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Error en el formato del monto.");
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al crear el pago: " + ex.getMessage());
         }
 
     }//GEN-LAST:event_BtnAceptarMouseClicked
@@ -222,10 +217,8 @@ public class Tarjeta extends javax.swing.JFrame {
         char enter = (char) evt.getKeyCode();
 
         if (enter == evt.VK_ENTER) {
-
             float precioTotal = Float.parseFloat(txtTotal.getText());
             float pagoCliente = Float.parseFloat(txtPago.getText());
-
         }
     }//GEN-LAST:event_txtPagoKeyPressed
     public void transparenciaBtn() {

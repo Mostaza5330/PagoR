@@ -1,17 +1,24 @@
 package entity;
 
 public class Pago {
-    private int id;
-    private double monto;
-    private String descripcion;
 
-    public Pago(int id, double monto, String descripcion) {
+    private int id;
+    private float monto;
+    private String descripcion;
+    private String metodoPago;
+    private String fecha;
+
+    public Pago(int id, float monto, String metodoPago, String descripcion, String fecha) {
         this.id = id;
         this.monto = monto;
         this.descripcion = descripcion;
+        this.fecha = fecha;
+        this.metodoPago = metodoPago;
     }
 
-    // Getters y setters
+    public Pago() {
+    }
+
     public int getId() {
         return id;
     }
@@ -20,11 +27,11 @@ public class Pago {
         this.id = id;
     }
 
-    public double getMonto() {
+    public float getMonto() {
         return monto;
     }
 
-    public void setMonto(double monto) {
+    public void setMonto(float monto) {
         this.monto = monto;
     }
 
@@ -35,4 +42,21 @@ public class Pago {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
+    public String getMetodoPago() {
+        return metodoPago;
+    }
+
+    public void setMetodoPago(String metodoPago) {
+        this.metodoPago = metodoPago;
+    }
+
+    public String getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
+    }
+
 }
