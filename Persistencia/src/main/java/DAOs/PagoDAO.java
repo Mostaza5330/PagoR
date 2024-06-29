@@ -11,20 +11,13 @@ import java.util.List;
 
 public class PagoDAO {
 
-    private Connection connection;
-
-    public PagoDAO(Connection connection) {
-        this.connection = connection;
-    }
-
     public void agregarPago(Pago pago) throws SQLException {
-        String sql = "INSERT INTO Pagos (monto, descripcion, metodoPago, fecha) VALUES (?, ?, ?, ?)";
-
+        String sql = "INSERT INTO Pagos (monto, descripcion, metodoPago) VALUES (?, ?, ?)";
+        Connection connection = ConexionDB.getConnection(); 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setFloat(1, pago.getMonto());
             statement.setString(2, pago.getDescripcion());
             statement.setString(3, pago.getMetodoPago());
-            statement.setString(4, pago.getFecha());
 
             statement.executeUpdate();
         } catch (SQLException e) {

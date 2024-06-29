@@ -9,24 +9,23 @@ import entity.Orden;
 import entity.Pago;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 public class Confirmacion extends javax.swing.JFrame {
-/**
+
     private PagoDAO pagoDAO;
     private Orden orden;
-    private PagoInicio ventanaPago; // Referencia a la ventana de pago
+    private boolean tipo;    
 
-    public Confirmacion(PagoDAO pagoDAO, Orden orden, PagoInicio ventanaPago) {
+    public Confirmacion(Orden orden, boolean tipo) {
         initComponents();
-        this.pagoDAO = pagoDAO;
-        this.orden = orden;
-        this.ventanaPago = ventanaPago;
+        this.tipo = tipo;this.pagoDAO = new PagoDAO();
+        
+        this.orden = orden;//no subir arriba de esta linea
         transparenciaBtn();
         setLocationRelativeTo(null);
-
+        
         // Mostrar detalles de la orden en el campo de texto
-        txtNoOrden.setText(String.valueOf(orden.getId()));
+        txtNoOrden.setText(String.valueOf(orden.getId()));       
     }
 
     @SuppressWarnings("unchecked")
@@ -68,32 +67,31 @@ public class Confirmacion extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtnAceptarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnAceptarMouseClicked
-        DefaultTableModel modeloTabla = (DefaultTableModel) ventanaPago.getTablaPago().getModel();
-
-        int filaSeleccionada = ventanaPago.getTablaPago().getSelectedRow();
-
-        if (filaSeleccionada != -1) {
-        modeloTabla.removeRow(filaSeleccionada);
-
+        String metodo;
+        if (tipo) {
+            metodo = "Efectivo";
+        } else {
+            metodo = "Tarjeta";
+        }
         // Crear el objeto Pago y guardarlo usando el DAO
         double monto = orden.getTotal();
         String descripcion = "Pago de orden " + orden.getId();
 
-        Pago nuevoPago = new Pago(0, (float) monto, "Efectivo",descripcion, "2023-06-28"); // El ID se asignará automáticamente
-        nuevoPago.setMetodoPago("Efectivo");
+        Pago nuevoPago = new Pago(0, (float) monto, metodo, descripcion, "2023-06-28"); // El ID se asignará automáticamente
+        nuevoPago.setMetodoPago(metodo);
         try {
             pagoDAO.agregarPago(nuevoPago);
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al agregar el pago: " + e.getMessage());
         }
-    } else {
-        JOptionPane.showMessageDialog(null, "Selecciona una fila primero");
-    }
-        ventanaPago.setVisible(true);
+
+        new PagoInicio().setVisible(true);
         dispose();
+
     }//GEN-LAST:event_BtnAceptarMouseClicked
-    **/public void transparenciaBtn() {
+
+    public void transparenciaBtn() {
         BtnAceptar.setOpaque(false);
         BtnAceptar.setContentAreaFilled(false);
         BtnAceptar.setBorderPainted(false);

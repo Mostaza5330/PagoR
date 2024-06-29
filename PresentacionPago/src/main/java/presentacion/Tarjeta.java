@@ -2,32 +2,31 @@ package presentacion;
 
 import DAOs.OrdenDAO;
 import DAOs.PagoDAO;
+import Tarjeta.IVerificaTarjeta;
+import Tarjeta.VerificaTarjeta;
 import entity.Orden;
 import entity.Pago;
 import javax.swing.JOptionPane;
-import com.mycompany.verificapago.IVerificaPago;
-import com.mycompany.verificapago.VerificaPago;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public class Tarjeta extends javax.swing.JFrame {
-/**
+
     private Orden orden;
     private OrdenDAO ordenDAO;
     private PagoDAO pagoDAO;
-    private IVerificaPago iVerificaPago;
+    private IVerificaTarjeta iVerificaPago;
 
-    public Tarjeta(Orden orden, OrdenDAO ordenDAO, Connection connection) {
+    public Tarjeta(Orden orden) {
         initComponents();
-        this.orden = orden;
-        this.ordenDAO = ordenDAO;
-        this.pagoDAO = new PagoDAO(connection); // Pasar la conexión a PagoDAO
-        this.iVerificaPago = new VerificaPago(); // Suponiendo que VerificaPago implementa IVerificaPago
+        transparenciaBtn();
+        this.orden = orden;this.pagoDAO = new PagoDAO();
+        this.iVerificaPago = new VerificaTarjeta(); // Suponiendo que VerificaPago implementa IVerificaPago
         setLocationRelativeTo(null);
+        
 
         txtNoOrden.setText(String.valueOf(orden.getId()));
         txtMesa.setText(String.valueOf(orden.getMesa()));
-        txtPlatillos.setText(orden.getDetalles().toString()); // Ajustar según la estructura de detalles
+        txtPlatillos.setText(orden.getPlatillos().toString()); // Ajustar según la estructura de detalles
         txtTotal.setText(String.valueOf(orden.getTotal()));
     }
 
@@ -192,7 +191,7 @@ public class Tarjeta extends javax.swing.JFrame {
         try {
             double monto = orden.getTotal();
 
-            boolean pagoVerificado = iVerificaPago.verificarPago(numeroTarjeta, monto, cvv, fechaCaducidad);
+            boolean pagoVerificado = iVerificaPago.verificarTarjeta(numeroTarjeta, monto, cvv, fechaCaducidad);
 
             if (pagoVerificado) {
                 Pago nuevoPago = new Pago(0, (float) monto,"Tarjeta", "Pago de orden " + orden.getId(), "2023-06-28"); // Ajustar fecha
@@ -221,7 +220,7 @@ public class Tarjeta extends javax.swing.JFrame {
             float pagoCliente = Float.parseFloat(txtPago.getText());
         }
     }//GEN-LAST:event_txtPagoKeyPressed
-    **/public void transparenciaBtn() {
+    public void transparenciaBtn() {
         BtnAceptar.setOpaque(false);
         BtnAceptar.setContentAreaFilled(false);
         BtnAceptar.setBorderPainted(false);

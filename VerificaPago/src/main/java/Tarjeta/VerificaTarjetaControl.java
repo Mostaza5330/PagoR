@@ -1,19 +1,19 @@
-package com.mycompany.verificapago;
+package Tarjeta;
 
 /**
  *
  * @author osval
  */
-public class VerificaPagoControl {
-    private IVerificaPago verificador;
+public class VerificaTarjetaControl {
+    private IVerificaTarjeta verificador;
 
     // Constructor que recibe una instancia de IVerificaPago
-    public VerificaPagoControl(IVerificaPago verificador) {
+    public VerificaTarjetaControl(IVerificaTarjeta verificador) {
         this.verificador = verificador;
     }
 
     // Método para iniciar la verificación de un pago
     public boolean iniciarVerificacion(String numeroTarjeta, double monto, String vcc, String fechaCaducidad) {
-        return verificador.verificarPago(numeroTarjeta, monto, vcc, fechaCaducidad);
+        return verificador.verificarTarjeta(numeroTarjeta, monto, vcc, fechaCaducidad);
     }
 }

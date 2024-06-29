@@ -3,30 +3,33 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package presentacion;
+
 import entity.Orden;
 import DAOs.OrdenDAO;
+import DAOs.PagoDAO;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 
 public class Efectivo extends javax.swing.JFrame {
-/**
-    private Orden orden;
-    private OrdenDAO ordenDAO;
 
-    public Efectivo(Orden orden, OrdenDAO ordenDAO) {
+    private Orden orden;
+    private PagoDAO pagoDAO;
+
+    public Efectivo(Orden orden) {
         initComponents();
         transparenciaBtn();
         setLocationRelativeTo(null);
 
         this.orden = orden;
-        this.ordenDAO = ordenDAO;
+        this.pagoDAO = new PagoDAO();
 
         txtNoOrden.setText(String.valueOf(orden.getId()));
         txtTotal.setText(String.valueOf(orden.getTotal()));
         txtMesa.setText(String.valueOf(orden.getMesa()));
-        txtPlatillos.setText(orden.getDetalles().toString()); // Modify as needed to show details
+        txtPlatillos.setText(orden.getPlatillos().toString()); // Modify as needed to show details
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -141,7 +144,8 @@ public class Efectivo extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtnAceptarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnAceptarMouseClicked
-        //Aqui va un validador que revisa que el pago sea mayor que la cantidad del total de la tabla
+        new Confirmacion(orden, true).setVisible(true);
+        dispose();
     }//GEN-LAST:event_BtnAceptarMouseClicked
 
     private void BtnSalirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnSalirMouseClicked
@@ -150,7 +154,7 @@ public class Efectivo extends javax.swing.JFrame {
     }//GEN-LAST:event_BtnSalirMouseClicked
 
     private void txtPagoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPagoKeyPressed
-         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             float precioTotal = Float.parseFloat(txtTotal.getText());
             float pagoCliente = Float.parseFloat(txtPago.getText());
             float vuelto;
@@ -163,8 +167,8 @@ public class Efectivo extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_txtPagoKeyPressed
-    **/
-     public void transparenciaBtn() {
+
+    public void transparenciaBtn() {
         BtnAceptar.setOpaque(false);
         BtnAceptar.setContentAreaFilled(false);
         BtnAceptar.setBorderPainted(false);
@@ -179,8 +183,6 @@ public class Efectivo extends javax.swing.JFrame {
         txtNoOrden.setOpaque(false);
         txtMesa.setOpaque(false);
     }
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnAceptar;
     private javax.swing.JButton BtnSalir;

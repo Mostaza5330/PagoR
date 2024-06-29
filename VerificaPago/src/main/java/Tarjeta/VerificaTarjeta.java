@@ -1,25 +1,26 @@
-package com.mycompany.verificapago;
+package Tarjeta;
 
+
+import Tarjeta.IVerificaTarjeta;
 import com.mycompany.banco.Banco;
 
-public class VerificaPago implements IVerificaPago {
+public class VerificaTarjeta implements IVerificaTarjeta {
 
     private Banco sistemaBanco;
 
     // Constructor que recibe el sistema del banco
-    public VerificaPago(Banco sistemaBanco) {
+    public VerificaTarjeta(Banco sistemaBanco) {
         this.sistemaBanco = sistemaBanco;
     }
 
     // Constructor sin argumentos
-    public VerificaPago() {
+    public VerificaTarjeta() {
         this.sistemaBanco = new Banco(); // Crear una instancia de Banco por defecto
     }
 
-    // Implementación del método de la interfaz
+
     @Override
-    public boolean verificarPago(String numeroTarjeta, double monto, String vcc, String fechaCaducidad) {
-        // Lógica para verificar el pago utilizando el sistema del banco
+    public boolean verificarTarjeta(String numeroTarjeta, double monto, String vcc, String fechaCaducidad) {
         return sistemaBanco.verificarPago(numeroTarjeta, monto, vcc, fechaCaducidad);
     }
 }

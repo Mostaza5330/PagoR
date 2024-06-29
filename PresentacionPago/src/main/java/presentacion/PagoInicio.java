@@ -99,41 +99,47 @@ public class PagoInicio extends javax.swing.JFrame {
     }//GEN-LAST:event_BtnSalirMouseClicked
 
     private void BtnEfectivoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnEfectivoMouseClicked
-/**
+
         int filaSeleccionada = TablaPago.getSelectedRow();
 
         if (filaSeleccionada != -1) {
             int ordenId = (int) TablaPago.getValueAt(filaSeleccionada, 0);
             try {
-                Orden orden
-                        = ordenDAO.getOrden(ordenId);
-                Efectivo efectivo = new Efectivo(orden,
-                        ordenDAO);
+                Orden orden = ordenDAO.getOrden(ordenId);
+                Efectivo efectivo = new Efectivo(orden);
                 efectivo.setVisible(true);
                 this.setVisible(false);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Error al cargar
-          la orden
-                : " + e.getMessage()); e.printStackTrace(); } } else {
-          JOptionPane.showMessageDialog(null, "Selecciona una fila primero");
+                JOptionPane.showMessageDialog(null, "Error al cargar la orden: " + e.getMessage());
+                e.printStackTrace();
             }
-**/
+        } else {
+            JOptionPane.showMessageDialog(null, "Selecciona una fila primero");
+        }
+
     }//GEN-LAST:event_BtnEfectivoMouseClicked
 
     private void BtnTarjetaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnTarjetaMouseClicked
-        /**
-         * int filaSeleccionada = TablaPago.getSelectedRow();
-         *
-         * if (filaSeleccionada != -1) { int ordenId = (int)
-         * TablaPago.getValueAt(filaSeleccionada, 0); try { Orden orden =
-         * ordenDAO.getOrden(ordenId); // Tarjeta tarjeta = new Tarjeta(orden,
-         * ordenDAO); // tarjeta.setVisible(true); this.setVisible(false); }
-         * catch (Exception e) { JOptionPane.showMessageDialog(null, "Error al
-         * cargar la orden: " + e.getMessage()); e.printStackTrace(); } } else {
-         * JOptionPane.showMessageDialog(null, "Selecciona una fila primero");
-         * }*
-         */
+        int filaSeleccionada = TablaPago.getSelectedRow();
+
+        if (filaSeleccionada != -1) {
+            int ordenId = (int) TablaPago.getValueAt(filaSeleccionada, 0);
+            try {
+                Orden orden = ordenDAO.getOrden(ordenId);
+                Tarjeta tarjeta = new Tarjeta(orden);
+                tarjeta.setVisible(true);
+                this.setVisible(false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Error al cargar la orden: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Selecciona una fila primero");
+        }
+
+
     }//GEN-LAST:event_BtnTarjetaMouseClicked
+
     public JTable getTablaPago() {
         return TablaPago;
     }
