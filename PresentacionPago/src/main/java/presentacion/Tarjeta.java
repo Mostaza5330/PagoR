@@ -11,7 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class Tarjeta extends javax.swing.JFrame {
-
+/**
     private Orden orden;
     private OrdenDAO ordenDAO;
     private PagoDAO pagoDAO;
@@ -198,9 +198,9 @@ public class Tarjeta extends javax.swing.JFrame {
                 Pago nuevoPago = new Pago(0, (float) monto,"Tarjeta", "Pago de orden " + orden.getId(), "2023-06-28"); // Ajustar fecha
                 pagoDAO.agregarPago(nuevoPago);
 
-                Confirmacion confirmacion = new Confirmacion(pagoDAO, nuevoPago, String.valueOf(orden.getId()));
+              //  Confirmacion confirmacion = new Confirmacion(pagoDAO, nuevoPago, String.valueOf(orden.getId()));
 
-                confirmacion.setVisible(true);
+                //confirmacion.setVisible(true);
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Pago no verificado. Verifique los datos de la tarjeta.");
@@ -221,7 +221,7 @@ public class Tarjeta extends javax.swing.JFrame {
             float pagoCliente = Float.parseFloat(txtPago.getText());
         }
     }//GEN-LAST:event_txtPagoKeyPressed
-    public void transparenciaBtn() {
+    **/public void transparenciaBtn() {
         BtnAceptar.setOpaque(false);
         BtnAceptar.setContentAreaFilled(false);
         BtnAceptar.setBorderPainted(false);

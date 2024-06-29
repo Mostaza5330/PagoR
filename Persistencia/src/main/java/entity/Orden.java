@@ -1,17 +1,16 @@
 package entity;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 public class Orden {
-
     private int id;
     private int mesa;
+    private String platillos;
+    private float total;
     private Timestamp fecha;
-    private List<DetalleOrden> detalles;
-    private double total;
 
-    // Getters and setters
+    // Getters y setters
+
     public int getId() {
         return id;
     }
@@ -28,6 +27,22 @@ public class Orden {
         this.mesa = mesa;
     }
 
+    public String getPlatillos() {
+        return platillos;
+    }
+
+    public void setPlatillos(String platillos) {
+        this.platillos = platillos;
+    }
+
+    public float getTotal() {
+        return total;
+    }
+
+    public void setTotal(float total) {
+        this.total = total;
+    }
+
     public Timestamp getFecha() {
         return fecha;
     }
@@ -36,24 +51,4 @@ public class Orden {
         this.fecha = fecha;
     }
 
-    public double getTotal() {
-        return total;
-    }
-
-    public void setTotal(double total) {
-        this.total = total;
-    }
-
-    public List<DetalleOrden> getDetalles() {
-        return detalles;
-    }
-
-    public void setDetalles(List<DetalleOrden> detalles) {
-        this.detalles = detalles;
-    }
-
-    // Calculate total price
-    public void calculateTotal() {
-        total = detalles.stream().mapToDouble(d -> d.getPrecio() * d.getCantidad()).sum();
-    }
 }

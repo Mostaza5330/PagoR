@@ -1,5 +1,4 @@
 entity\Orden.class
-entity\DetalleOrden.class
 DAOs\PagoDAO.class
 entity\Pago.class
 DAOs\OrdenDAO.class

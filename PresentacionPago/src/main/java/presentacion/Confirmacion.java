@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class Confirmacion extends javax.swing.JFrame {
-
+/**
     private PagoDAO pagoDAO;
     private Orden orden;
     private PagoInicio ventanaPago; // Referencia a la ventana de pago
@@ -93,7 +93,7 @@ public class Confirmacion extends javax.swing.JFrame {
         ventanaPago.setVisible(true);
         dispose();
     }//GEN-LAST:event_BtnAceptarMouseClicked
-    public void transparenciaBtn() {
+    **/public void transparenciaBtn() {
         BtnAceptar.setOpaque(false);
         BtnAceptar.setContentAreaFilled(false);
         BtnAceptar.setBorderPainted(false);

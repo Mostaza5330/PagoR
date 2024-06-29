@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 
 public class Efectivo extends javax.swing.JFrame {
-
+/**
     private Orden orden;
     private OrdenDAO ordenDAO;
 
@@ -163,7 +163,8 @@ public class Efectivo extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_txtPagoKeyPressed
-    public void transparenciaBtn() {
+    **/
+     public void transparenciaBtn() {
         BtnAceptar.setOpaque(false);
         BtnAceptar.setContentAreaFilled(false);
         BtnAceptar.setBorderPainted(false);
