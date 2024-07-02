@@ -19,10 +19,10 @@ public class Tarjeta extends javax.swing.JFrame {
     public Tarjeta(Orden orden) {
         initComponents();
         transparenciaBtn();
-        this.orden = orden;this.pagoDAO = new PagoDAO();
+        this.orden = orden;
+        this.pagoDAO = new PagoDAO();
         this.iVerificaPago = new VerificaTarjeta(); // Suponiendo que VerificaPago implementa IVerificaPago
         setLocationRelativeTo(null);
-        
 
         txtNoOrden.setText(String.valueOf(orden.getId()));
         txtMesa.setText(String.valueOf(orden.getMesa()));
@@ -194,11 +194,10 @@ public class Tarjeta extends javax.swing.JFrame {
             boolean pagoVerificado = iVerificaPago.verificarTarjeta(numeroTarjeta, monto, cvv, fechaCaducidad);
 
             if (pagoVerificado) {
-                Pago nuevoPago = new Pago(0, (float) monto,"Tarjeta", "Pago de orden " + orden.getId(), "2023-06-28"); // Ajustar fecha
+                Pago nuevoPago = new Pago(0, (float) monto, "Tarjeta", "Pago de orden " + orden.getId(), "2023-06-28"); // Ajustar fecha
                 pagoDAO.agregarPago(nuevoPago);
 
-              //  Confirmacion confirmacion = new Confirmacion(pagoDAO, nuevoPago, String.valueOf(orden.getId()));
-
+                //  Confirmacion confirmacion = new Confirmacion(pagoDAO, nuevoPago, String.valueOf(orden.getId()));
                 //confirmacion.setVisible(true);
                 dispose();
             } else {
@@ -209,7 +208,8 @@ public class Tarjeta extends javax.swing.JFrame {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al crear el pago: " + ex.getMessage());
         }
-
+        new Confirmacion(orden, true).setVisible(true);
+        dispose();
     }//GEN-LAST:event_BtnAceptarMouseClicked
 
     private void txtPagoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPagoKeyPressed
