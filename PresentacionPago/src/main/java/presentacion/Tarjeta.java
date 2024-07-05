@@ -1,31 +1,31 @@
 package presentacion;
 
-import DAOs.OrdenDAO;
-import DAOs.PagoDAO;
 import Tarjeta.IVerificaTarjeta;
 import Tarjeta.VerificaTarjeta;
-import entity.Orden;
-import entity.Pago;
+import daos.OrdenDaoImpl;
+import daos.PagoDaoImpl;
+import entidades.OrdenEntity;
+import entidades.PagoEntity;
 import javax.swing.JOptionPane;
 import java.sql.SQLException;
 
 public class Tarjeta extends javax.swing.JFrame {
 
-    private Orden orden;
-    private OrdenDAO ordenDAO;
-    private PagoDAO pagoDAO;
+    private OrdenEntity orden;
+    private OrdenDaoImpl ordenDAO;
+    private PagoDaoImpl pagoDAO;
     private IVerificaTarjeta iVerificaPago;
 
-    public Tarjeta(Orden orden) {
+    public Tarjeta(OrdenEntity orden) {
         initComponents();
         transparenciaBtn();
         this.orden = orden;
-        this.pagoDAO = new PagoDAO();
-        this.iVerificaPago = new VerificaTarjeta(); // Suponiendo que VerificaPago implementa IVerificaPago
+        this.pagoDAO = new PagoDaoImpl();
+        this.iVerificaPago = new VerificaTarjeta(); // Suponiendo que VerificaTarjeta implementa IVerificaTarjeta
         setLocationRelativeTo(null);
 
         txtNoOrden.setText(String.valueOf(orden.getId()));
-        txtMesa.setText(String.valueOf(orden.getMesa()));
+        txtMesa.setText(String.valueOf(orden.getNumeroMesa()));
         txtPlatillos.setText(orden.getPlatillos().toString()); // Ajustar según la estructura de detalles
         txtTotal.setText(String.valueOf(orden.getTotal()));
     }
@@ -188,28 +188,17 @@ public class Tarjeta extends javax.swing.JFrame {
             return;
         }
 
-        try {
-            double monto = orden.getTotal();
-
-            boolean pagoVerificado = iVerificaPago.verificarTarjeta(numeroTarjeta, monto, cvv, fechaCaducidad);
-
-            if (pagoVerificado) {
-                Pago nuevoPago = new Pago(0, (float) monto, "Tarjeta", "Pago de orden " + orden.getId(), "2023-06-28"); // Ajustar fecha
-                pagoDAO.agregarPago(nuevoPago);
-
-                //  Confirmacion confirmacion = new Confirmacion(pagoDAO, nuevoPago, String.valueOf(orden.getId()));
-                //confirmacion.setVisible(true);
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Pago no verificado. Verifique los datos de la tarjeta.");
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Error en el formato del monto.");
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al crear el pago: " + ex.getMessage());
+        double monto = orden.getTotal();
+        boolean pagoVerificado = iVerificaPago.verificarTarjeta(numeroTarjeta, monto, cvv, fechaCaducidad);
+        if (pagoVerificado) {
+            new Confirmacion(orden, true).setVisible(true);
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Pago no verificado. Verifique los datos de la tarjeta.");
         }
-        new Confirmacion(orden, true).setVisible(true);
+
         dispose();
+
     }//GEN-LAST:event_BtnAceptarMouseClicked
 
     private void txtPagoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPagoKeyPressed

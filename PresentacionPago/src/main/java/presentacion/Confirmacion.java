@@ -4,25 +4,26 @@
  */
 package presentacion;
 
-import DAOs.PagoDAO;
-import entity.Orden;
-import entity.Pago;
+import daos.PagoDaoImpl;
+import entidades.OrdenEntity;
+import entidades.PagoEntity;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class Confirmacion extends javax.swing.JFrame {
 
-    private PagoDAO pagoDAO;
-    private Orden orden;
+    private PagoDaoImpl pagoDAO;
+    private OrdenEntity orden;
     private boolean tipo;    
 
-    public Confirmacion(Orden orden, boolean tipo) {
+    public Confirmacion(OrdenEntity orden, boolean tipo) {
         initComponents();
-        this.tipo = tipo;this.pagoDAO = new PagoDAO();
+        this.tipo = tipo;
+        this.pagoDAO = new PagoDaoImpl();
         
-        this.orden = orden;//no subir arriba de esta linea
-        transparenciaBtn();
+        this.orden = orden;
         setLocationRelativeTo(null);
+        transparenciaBtn();
         
         // Mostrar detalles de la orden en el campo de texto
         txtNoOrden.setText(String.valueOf(orden.getId()));       
@@ -77,14 +78,9 @@ public class Confirmacion extends javax.swing.JFrame {
         double monto = orden.getTotal();
         String descripcion = "Pago de orden " + orden.getId();
 
-        Pago nuevoPago = new Pago(0, (float) monto, metodo, descripcion, "2023-06-28"); // El ID se asignará automáticamente
+        PagoEntity nuevoPago = new PagoEntity(0, (float) monto, metodo, descripcion, "2023-06-28"); // El ID se asignará automáticamente
         nuevoPago.setMetodoPago(metodo);
-        try {
-            pagoDAO.agregarPago(nuevoPago);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar el pago: " + e.getMessage());
-        }
+        pagoDAO.crear(nuevoPago);
 
         new PagoInicio().setVisible(true);
         dispose();

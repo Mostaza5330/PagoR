@@ -1,22 +1,21 @@
 package presentacion;
 
-import DAOs.OrdenDAO;
-import entity.Orden;
-import java.sql.SQLException;
-
+import daos.OrdenDaoImpl;
+import entidades.OrdenEntity;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
+import java.util.Optional;
 
 public class PagoInicio extends javax.swing.JFrame {
 
-    private OrdenDAO ordenDAO;
+    private OrdenDaoImpl ordenDAO;
 
     public PagoInicio() {
         initComponents();
         transparenciaBtn();
         setLocationRelativeTo(null);
-        this.ordenDAO = new OrdenDAO();
+        this.ordenDAO = new OrdenDaoImpl();
         cargarOrden();
     }
 
@@ -74,12 +73,12 @@ public class PagoInicio extends javax.swing.JFrame {
         TablaPago.setForeground(new java.awt.Color(255, 255, 255));
         TablaPago.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "No.Orden", "Mesa", "Platillo", "Total", "Fecha y hora"
+                "No.Orden", "Mesa", "Platillo", "Total"
             }
         ));
         TablaPago.setGridColor(new java.awt.Color(102, 102, 102));
@@ -105,10 +104,15 @@ public class PagoInicio extends javax.swing.JFrame {
         if (filaSeleccionada != -1) {
             int ordenId = (int) TablaPago.getValueAt(filaSeleccionada, 0);
             try {
-                Orden orden = ordenDAO.getOrden(ordenId);
-                Efectivo efectivo = new Efectivo(orden);
-                efectivo.setVisible(true);
-                this.setVisible(false);
+                Optional<OrdenEntity> ordenOptional = ordenDAO.obtenerPorId(ordenId);
+                if (ordenOptional.isPresent()) {
+                    OrdenEntity orden = ordenOptional.get();
+                    Efectivo efectivo = new Efectivo(orden);
+                    efectivo.setVisible(true);
+                    this.setVisible(false);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Orden no encontrada.");
+                }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Error al cargar la orden: " + e.getMessage());
                 e.printStackTrace();
@@ -116,7 +120,6 @@ public class PagoInicio extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "Selecciona una fila primero");
         }
-
     }//GEN-LAST:event_BtnEfectivoMouseClicked
 
     private void BtnTarjetaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BtnTarjetaMouseClicked
@@ -125,10 +128,15 @@ public class PagoInicio extends javax.swing.JFrame {
         if (filaSeleccionada != -1) {
             int ordenId = (int) TablaPago.getValueAt(filaSeleccionada, 0);
             try {
-                Orden orden = ordenDAO.getOrden(ordenId);
-                Tarjeta tarjeta = new Tarjeta(orden);
-                tarjeta.setVisible(true);
-                this.setVisible(false);
+                Optional<OrdenEntity> ordenOptional = ordenDAO.obtenerPorId(ordenId);
+                if (ordenOptional.isPresent()) {
+                    OrdenEntity orden = ordenOptional.get();
+                    Tarjeta tarjeta = new Tarjeta(orden);
+                    tarjeta.setVisible(true);
+                    this.setVisible(false);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Orden no encontrada.");
+                }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Error al cargar la orden: " + e.getMessage());
                 e.printStackTrace();
@@ -136,7 +144,6 @@ public class PagoInicio extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "Selecciona una fila primero");
         }
-
 
     }//GEN-LAST:event_BtnTarjetaMouseClicked
 
@@ -162,14 +169,15 @@ public class PagoInicio extends javax.swing.JFrame {
         DefaultTableModel modelo = (DefaultTableModel) TablaPago.getModel();
         modelo.setRowCount(0);
         try {
-            List<Orden> ordenes = ordenDAO.listarOrdenes();
-            for (Orden orden : ordenes) {
-                modelo.addRow(new Object[]{orden.getId(), orden.getMesa(), orden.getPlatillos(), orden.getTotal(), orden.getFecha()});
+            List<OrdenEntity> ordenes = ordenDAO.obtenerTodos();
+            for (OrdenEntity orden : ordenes) {
+                modelo.addRow(new Object[]{orden.getId(), orden.getNumeroMesa(), orden.getPlatillos(), orden.getTotal()});
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al cargar las órdenes: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 
 

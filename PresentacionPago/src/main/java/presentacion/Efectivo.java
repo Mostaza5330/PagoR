@@ -4,29 +4,29 @@
  */
 package presentacion;
 
-import entity.Orden;
-import DAOs.OrdenDAO;
-import DAOs.PagoDAO;
-
-import javax.swing.*;
+import daos.OrdenDaoImpl;
+import daos.PagoDaoImpl;
+import entidades.OrdenEntity;
+import entidades.PagoEntity;
+import javax.swing.JOptionPane;
 import java.awt.event.KeyEvent;
 
 public class Efectivo extends javax.swing.JFrame {
 
-    private Orden orden;
-    private PagoDAO pagoDAO;
+    private OrdenEntity orden;
+    private PagoDaoImpl pagoDAO;
 
-    public Efectivo(Orden orden) {
+    public Efectivo(OrdenEntity orden) {
         initComponents();
         transparenciaBtn();
         setLocationRelativeTo(null);
 
         this.orden = orden;
-        this.pagoDAO = new PagoDAO();
+        this.pagoDAO = new PagoDaoImpl();
 
         txtNoOrden.setText(String.valueOf(orden.getId()));
         txtTotal.setText(String.valueOf(orden.getTotal()));
-        txtMesa.setText(String.valueOf(orden.getMesa()));
+        txtMesa.setText(String.valueOf(orden.getNumeroMesa()));
         txtPlatillos.setText(orden.getPlatillos().toString()); // Modify as needed to show details
     }
 
